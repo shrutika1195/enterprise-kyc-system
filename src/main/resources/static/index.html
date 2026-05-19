@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KYC Verification Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0d1b2a;
+      --navy-mid: #1b2d42;
+      --navy-light: #253d59;
+      --gold: #c9a84c;
+      --gold-light: #e8c96e;
+      --gold-pale: #f5e9c8;
+      --surface: #f7f5f0;
+      --surface-2: #ffffff;
+      --border: rgba(201,168,76,0.2);
+      --border-strong: rgba(201,168,76,0.4);
+      --text-primary: #0d1b2a;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --success: #1a6b3c;
+      --success-bg: #e6f4ec;
+      --danger: #9b1c1c;
+      --danger-bg: #fde8e8;
+      --warning-bg: #fffbeb;
+      --warning-border: #c9a84c;
+      --radius: 10px;
+      --radius-lg: 16px;
+      --shadow: 0 2px 16px rgba(13,27,42,0.08);
+      --shadow-lg: 0 8px 32px rgba(13,27,42,0.14);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      color: var(--text-primary);
+      min-height: 100vh;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ── Navbar ── */
+    nav {
+      background: var(--navy);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(201,168,76,0.3);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+
+    .nav-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-logo svg { width: 20px; height: 20px; }
+
+    .nav-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      color: #fff;
+      letter-spacing: 0.01em;
+    }
+
+    .nav-subtitle {
+      font-size: 11px;
+      color: var(--gold);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+    }
+
+    .nav-user-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+
+    .btn-logout {
+      padding: 6px 16px;
+      border: 1px solid rgba(201,168,76,0.5);
+      background: transparent;
+      color: var(--gold);
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(201,168,76,0.1);
+      border-color: var(--gold);
+    }
+
+    /* ── Layout ── */
+    .page-header {
+      background: var(--navy);
+      padding: 2rem 2rem 0;
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+    }
+
+    .page-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-bottom: 1.5rem;
+    }
+
+    .breadcrumb {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .breadcrumb span { color: var(--gold); }
+
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .page-desc {
+      font-size: 14px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 4px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin-top: 1.5rem;
+    }
+
+    .tab-btn {
+      padding: 10px 24px;
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,0.5);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      letter-spacing: 0.03em;
+    }
+
+    .tab-btn.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* ── Main Content ── */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Form Card ── */
+    .card {
+      background: var(--surface-2);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(201,168,76,0.15);
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gold-pale);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .card-icon svg { width: 20px; height: 20px; color: var(--gold); }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .card-body { padding: 2rem; }
+
+    /* ── Form Elements ── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-group { margin-bottom: 1.25rem; }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .form-label .required { color: var(--gold); margin-left: 2px; }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #e2ddd5;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: #fff;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .form-control:hover { border-color: #c9a84c60; }
+
+    .form-control:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+    }
+
+    .form-control::placeholder { color: #b0a898; }
+
+    select.form-control { cursor: pointer; }
+
+    .file-upload-area {
+      border: 1.5px dashed #d0cab8;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      background: #faf9f7;
+    }
+
+    .file-upload-area:hover, .file-upload-area.dragover {
+      border-color: var(--gold);
+      background: var(--gold-pale);
+    }
+
+    .file-upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .file-upload-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--gold-pale);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+    }
+
+    .file-upload-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .file-upload-text strong { color: var(--gold); }
+
+    .file-name-display {
+      font-size: 12px;
+      color: var(--success);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    /* ── OTP Section ── */
+    .otp-section {
+      background: linear-gradient(135deg, #fffdf5 0%, #fdf8e8 100%);
+      border: 1.5px solid var(--warning-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .otp-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .otp-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--gold);
+      color: var(--navy);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .otp-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #92661a;
+    }
+
+    .input-with-btn {
+      display: flex;
+      gap: 8px;
+    }
+
+    .input-with-btn .form-control { flex: 1; }
+
+    .btn-otp {
+      padding: 10px 16px;
+      background: var(--navy);
+      color: var(--gold);
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-otp:hover { background: var(--navy-mid); }
+    .btn-otp:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .otp-timer {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      height: 16px;
+    }
+
+    .otp-timer.active { color: #92661a; font-weight: 500; }
+
+    /* ── Submit Button ── */
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent 60%, rgba(201,168,76,0.2));
+    }
+
+    .btn-submit:hover { background: var(--navy-mid); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(13,27,42,0.2); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+
+    /* ── Alerts ── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-top: 1rem;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .alert.show { display: block; }
+    .alert-success { background: var(--success-bg); color: var(--success); border: 1px solid rgba(26,107,60,0.2); }
+    .alert-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(155,28,28,0.2); }
+    .alert-info { background: #eff6ff; color: #1e40af; border: 1px solid rgba(30,64,175,0.2); }
+
+    /* ── Steps Indicator ── */
+    .steps {
+      display: flex;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: 0;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e2ddd5;
+      color: #8a807a;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .step.active .step-num, .step.done .step-num {
+      background: var(--navy);
+      color: var(--gold);
+    }
+
+    .step-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .step.active .step-text { color: var(--text-primary); }
+
+    .step-line {
+      flex: 1;
+      height: 1px;
+      background: #e2ddd5;
+      max-width: 40px;
+    }
+
+    /* ── Admin Dashboard ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--surface-2);
+      border-radius: var(--radius);
+      border: 1px solid rgba(201,168,76,0.15);
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.pending { background: #fff8e6; }
+    .stat-icon.approved { background: var(--success-bg); }
+    .stat-icon.rejected { background: var(--danger-bg); }
+
+    .stat-num { font-size: 26px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+    .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── Table ── */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: #faf9f7;
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+      text-align: left;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid #f0ece4;
+      transition: background 0.15s;
+    }
+
+    tbody tr:hover { background: #faf8f4; }
+    tbody tr:last-child { border-bottom: none; }
+
+    tbody td {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .badge-pending { background: #fff8e6; color: #92661a; }
+    .badge-approved { background: var(--success-bg); color: var(--success); }
+    .badge-rejected { background: var(--danger-bg); color: var(--danger); }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .action-btn {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s;
+    }
+
+    .btn-approve { background: var(--success-bg); color: var(--success); border-color: rgba(26,107,60,0.3); }
+    .btn-approve:hover { background: #c6e8d5; }
+    .btn-reject { background: var(--danger-bg); color: var(--danger); border-color: rgba(155,28,28,0.3); margin-left: 6px; }
+    .btn-reject:hover { background: #fcd0d0; }
+
+    .doc-link {
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+    }
+
+    .doc-link:hover { text-decoration: underline; }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state svg { width: 48px; height: 48px; margin: 0 auto 1rem; opacity: 0.3; }
+
+    .refresh-btn {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid rgba(201,168,76,0.4);
+      color: var(--gold);
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .refresh-btn:hover { background: rgba(201,168,76,0.08); }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .form-row { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr; }
+      nav { padding: 0 1rem; }
+      .main { padding: 1rem; }
+      .card-body { padding: 1rem; }
+    }
+
+    /* ── Loading skeleton ── */
+    .skeleton {
+      background: linear-gradient(90deg, #f0ece4 25%, #e8e4dc 50%, #f0ece4 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 9999;
+      max-width: 320px;
+    }
+
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success { background: var(--navy); color: var(--gold); }
+    #toast.error { background: var(--danger); color: #fff; }
+    #toast.info { background: var(--gold); color: var(--navy); }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0d1b2a" stroke-width="2.5" stroke-linecap="round">
+        <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/>
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+    </div>
+    <div>
+      <div class="nav-title">KYC Portal</div>
+      <div class="nav-subtitle">Identity Verification</div>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="nav-user" id="navUser">
+      <div class="nav-user-dot"></div>
+      <span id="navUsername">Loading…</span>
+    </div>
+    <a href="/logout" class="btn-logout">Sign Out</a>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb">Portal / <span>KYC Verification</span></div>
+    <div class="page-title">Know Your Customer</div>
+    <div class="page-desc">Secure document submission and identity verification</div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('submit', this)">Submit Application</button>
+      <button class="tab-btn" id="adminTabBtn" onclick="switchTab('admin', this)" style="display:none">Admin Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Submit Tab -->
+  <div class="tab-panel active" id="tab-submit">
+    <div style="max-width: 640px; margin: 0 auto;">
+
+      <div class="steps" id="stepsIndicator">
+        <div class="step active" id="step1"><div class="step-num">1</div><div class="step-text">Your Details</div></div>
+        <div class="step-line"></div>
+        <div class="step" id="step2"><div class="step-num">2</div><div class="step-text">Verify Identity</div></div>
+        <div class="step-line"></div>
+        <div class="step" id="step3"><div class="step-num">3</div><div class="step-text">Submit</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--gold)">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">New KYC Application</div>
+            <div class="card-subtitle">All fields are required. Documents must be valid government-issued ID.</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <form id="kycForm" novalidate>
+
+            <div class="form-group">
+              <label class="form-label">Full Name <span class="required">*</span></label>
+              <input type="text" id="name" class="form-control" placeholder="As on government document" required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Document Type <span class="required">*</span></label>
+                <select id="docType" class="form-control" required>
+                  <option value="AADHAR">Aadhar Card</option>
+                  <option value="PAN">PAN Card</option>
+                  <option value="PASSPORT">Passport</option>
+                  <option value="DRIVING_LICENSE">Driving License</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Document Number <span class="required">*</span></label>
+                <input type="text" id="docNumber" class="form-control" placeholder="Uppercase alphanumeric" style="text-transform:uppercase" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Upload Document <span class="required">*</span></label>
+              <div class="file-upload-area" id="uploadArea">
+                <input type="file" id="documentFile" accept=".pdf,.jpg,.jpeg,.png" required>
+                <div class="file-upload-icon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="2">
+                    <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+                    <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
+                  </svg>
+                </div>
+                <div class="file-upload-text"><strong>Click to upload</strong> or drag &amp; drop</div>
+                <div class="file-upload-text" style="margin-top:2px;font-size:11px;color:var(--text-muted)">PDF, JPG, PNG — max 5MB</div>
+                <div class="file-name-display" id="fileNameDisplay"></div>
+              </div>
+            </div>
+
+            <!-- OTP Section -->
+            <div class="otp-section">
+              <div class="otp-header">
+                <div class="otp-badge">Step 2</div>
+                <div class="otp-label">Identity Verification via OTP</div>
+              </div>
+
+              <div class="form-group" style="margin-bottom:0.75rem">
+                <label class="form-label">Email Address <span class="required">*</span></label>
+                <input type="email" id="email" class="form-control" placeholder="you@example.com" required>
+              </div>
+
+              <div class="form-group" style="margin-bottom:0.75rem">
+                <label class="form-label">Mobile Number <span class="required">*</span></label>
+                <div class="input-with-btn">
+                  <input type="tel" id="phone" class="form-control" placeholder="+91 9XXXXXXXXX" required>
+                  <button type="button" class="btn-otp" id="sendOtpBtn" onclick="requestOtp()">Send OTP</button>
+                </div>
+                <div class="otp-timer" id="otpTimer"></div>
+              </div>
+
+              <div class="form-group" style="margin-bottom:0">
+                <label class="form-label">Enter OTP <span class="required">*</span></label>
+                <input type="text" id="otp" class="form-control" placeholder="6-digit OTP" maxlength="6" style="letter-spacing:0.2em;font-size:18px;font-weight:600" required>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+              Submit KYC Application
+            </button>
+
+          </form>
+          <div class="alert" id="formAlert"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Tab -->
+  <div class="tab-panel" id="tab-admin">
+
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-icon pending">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#92661a" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div>
+          <div class="stat-num" id="statPending">—</div>
+          <div class="stat-label">Pending Review</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon approved">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--success)" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div>
+          <div class="stat-num" id="statApproved">—</div>
+          <div class="stat-label">Approved</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon rejected">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--danger)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        </div>
+        <div>
+          <div class="stat-num" id="statRejected">—</div>
+          <div class="stat-label">Rejected</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--gold)">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+            </svg>
+          </div>
+          <div>
+            <div class="card-title">All Applications</div>
+            <div class="card-subtitle" id="tableSubtitle">Loading records…</div>
+          </div>
+        </div>
+        <button class="refresh-btn" onclick="fetchKycRecords()">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:4px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          Refresh
+        </button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Applicant</th>
+            <th>Document</th>
+            <th>Doc Number</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody id="kycTableBody">
+          <tr><td colspan="6"><div class="empty-state">Loading…</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+  let otpCountdownInterval = null;
+  let isAdmin = false;
+
+  // ── Tab switching ──
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    btn.classList.add('active');
+    if (tabId === 'admin') fetchKycRecords();
+  }
+
+  // ── Toast notifications ──
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'show ' + type;
+    clearTimeout(t._hide);
+    t._hide = setTimeout(() => t.className = '', 3500);
+  }
+
+  // ── File upload UX ──
+  const uploadArea = document.getElementById('uploadArea');
+  const fileInput = document.getElementById('documentFile');
+
+  fileInput.addEventListener('change', () => {
+    const f = fileInput.files[0];
+    if (f) {
+      if (f.size > 5 * 1024 * 1024) {
+        showAlert('File size must be under 5MB.', 'danger');
+        fileInput.value = '';
+        return;
+      }
+      document.getElementById('fileNameDisplay').textContent = '✓ ' + f.name;
+      document.getElementById('step2').classList.add('active');
+    }
+  });
+
+  ['dragover', 'dragleave', 'drop'].forEach(evt => {
+    uploadArea.addEventListener(evt, e => {
+      e.preventDefault();
+      if (evt === 'dragover') uploadArea.classList.add('dragover');
+      else {
+        uploadArea.classList.remove('dragover');
+        if (evt === 'drop' && e.dataTransfer.files[0]) {
+          fileInput.files = e.dataTransfer.files;
+          fileInput.dispatchEvent(new Event('change'));
+        }
+      }
+    });
+  });
+
+  // ── OTP Countdown ──
+  function startOtpCountdown(seconds) {
+    clearInterval(otpCountdownInterval);
+    const btn = document.getElementById('sendOtpBtn');
+    const timer = document.getElementById('otpTimer');
+    btn.disabled = true;
+
+    function update() {
+      timer.textContent = `OTP valid for ${seconds}s — didn't receive it? Resend after timer expires.`;
+      timer.className = 'otp-timer active';
+      if (--seconds < 0) {
+        clearInterval(otpCountdownInterval);
+        btn.disabled = false;
+        timer.textContent = 'OTP expired. You may request a new one.';
+        timer.className = 'otp-timer';
+      }
+    }
+    update();
+    otpCountdownInterval = setInterval(update, 1000);
+  }
+
+  // ── Request OTP ──
+async function requestOtp() {
+    const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+
+    if (!email) {
+        showToast('Please enter your email address first.', 'error');
+        return;
+    }
+
+    if (!phone) {
+        showToast('Please enter your phone number first.', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('sendOtpBtn');
+    btn.innerHTML = '<span class="spinner"></span>Sending…';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch('/api/kyc/generate-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ email: email, phoneNumber: phone })
+        });
+
+        const text = await response.text();
+
+        if (response.ok) {
+            showToast('OTP sent to ' + email, 'info');
+            startOtpCountdown(120);
+            document.getElementById('otp').focus();
+            document.getElementById('step3').classList.add('active');
+        } else {
+            showToast(text || 'Failed to send OTP. Check your email.', 'error');
+            btn.disabled = false;
+        }
+    } catch (err) {
+        showToast('Network error sending OTP.', 'error');
+        btn.disabled = false;
+    } finally {
+        btn.innerHTML = 'Send OTP';
+    }
+}
+
+  // ── Form Submission ──
+document.getElementById('kycForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    hideAlert();
+
+    const name = document.getElementById('name').value.trim();
+    const docNumber = document.getElementById('docNumber').value.trim().toUpperCase();
+    const email = document.getElementById('email').value.trim();
+    const otp = document.getElementById('otp').value.trim();
+    const file = document.getElementById('documentFile').files[0];
+
+    if (!name || !docNumber || !email || !otp || !file) {
+        showAlert('Please fill in all required fields.', 'danger');
+        return;
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span>Submitting…';
+
+    const formData = new FormData();
+    formData.append('applicantName', name);
+    formData.append('documentType', document.getElementById('docType').value);
+    formData.append('documentNumber', docNumber);
+    formData.append('phoneNumber', document.getElementById('phone').value.trim());
+    formData.append('email', email);
+    formData.append('otp', otp);
+    formData.append('file', file);
+
+    try {
+        const response = await fetch('/api/kyc', { method: 'POST', body: formData });
+
+        if (response.ok) {
+            const record = await response.json();
+            document.getElementById('kycForm').reset();
+            document.getElementById('fileNameDisplay').textContent = '';
+            document.getElementById('otpTimer').textContent = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            clearInterval(otpCountdownInterval);
+            document.querySelectorAll('.step').forEach((s, i) => { if (i > 0) s.classList.remove('active'); });
+            showAlert(`Application submitted! Your reference ID is <strong>#${record.id}</strong>. We'll notify you once verified.`, 'success');
+            showToast('Application submitted successfully!', 'success');
+            if (isAdmin) fetchKycRecords();
+        } else {
+            let msg = 'Something went wrong.';
+            try {
+                const err = await response.json();
+                if (err.message) msg = err.message;
+                else msg = Object.values(err).join('<br>');
+            } catch {}
+            showAlert(msg, 'danger');
+        }
+    } catch (err) {
+        showAlert('Network error. Please try again.', 'danger');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Submit KYC Application';
+    }
+});
+
+  // ── Alert helpers ──
+  function showAlert(html, type) {
+    const box = document.getElementById('formAlert');
+    box.innerHTML = html;
+    box.className = 'alert alert-' + type + ' show';
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function hideAlert() {
+    document.getElementById('formAlert').className = 'alert';
+  }
+
+  // ── Fetch all records (Admin) ──
+  async function fetchKycRecords() {
+    document.getElementById('tableSubtitle').textContent = 'Loading records…';
+    try {
+      const response = await fetch('/api/kyc');
+
+      if (response.status === 403) {
+        isAdmin = false;
+        return;
+      }
+
+      isAdmin = true;
+      document.getElementById('adminTabBtn').style.display = 'inline-block';
+      document.getElementById('navUsername').textContent = 'Admin';
+
+      const records = await response.json();
+      document.getElementById('tableSubtitle').textContent = `${records.length} total application${records.length !== 1 ? 's' : ''}`;
+
+      const pending = records.filter(r => r.verificationStatus === 'PENDING').length;
+      const approved = records.filter(r => r.verificationStatus === 'APPROVED').length;
+      const rejected = records.filter(r => r.verificationStatus === 'REJECTED').length;
+
+      document.getElementById('statPending').textContent = pending;
+      document.getElementById('statApproved').textContent = approved;
+      document.getElementById('statRejected').textContent = rejected;
+
+      const tbody = document.getElementById('kycTableBody');
+      if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <p>No applications yet</p>
+        </div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = records.map(r => {
+        const status = r.verificationStatus || 'PENDING';
+        const badgeClass = { APPROVED: 'badge-approved', REJECTED: 'badge-rejected', PENDING: 'badge-pending' }[status] || 'badge-pending';
+        const actions = status === 'PENDING'
+          ? `<button class="action-btn btn-approve" onclick="updateStatus(${r.id},'APPROVED')">Approve</button>
+             <button class="action-btn btn-reject" onclick="updateStatus(${r.id},'REJECTED')">Reject</button>`
+          : `<span style="color:var(--text-muted);font-size:12px">Processed</span>`;
+        return `<tr>
+          <td><strong>#${r.id}</strong></td>
+          <td>${escapeHtml(r.applicantName)}</td>
+          <td>${r.documentFileName
+            ? `<a class="doc-link" href="/uploads/${encodeURIComponent(r.documentFileName)}" target="_blank">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                ${escapeHtml(r.documentType)}</a>`
+            : escapeHtml(r.documentType)}</td>
+          <td style="font-family:monospace;letter-spacing:0.05em">${escapeHtml(r.documentNumber)}</td>
+          <td><span class="badge ${badgeClass}"><span class="badge-dot"></span>${status}</span></td>
+          <td>${actions}</td>
+        </tr>`;
+      }).join('');
+
+    } catch (err) {
+      document.getElementById('tableSubtitle').textContent = 'Error loading records';
+    }
+  }
+
+  // ── Update Status ──
+  async function updateStatus(id, newStatus) {
+    try {
+      const res = await fetch(`/api/kyc/${id}/status?status=${newStatus}`, { method: 'PUT' });
+      if (res.ok) {
+        showToast(`Application #${id} ${newStatus.toLowerCase()}.`, newStatus === 'APPROVED' ? 'success' : 'error');
+        fetchKycRecords();
+      }
+    } catch (err) {
+      showToast('Failed to update status.', 'error');
+    }
+  }
+
+  // ── Security: prevent XSS ──
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Auto uppercase document number ──
+  document.getElementById('docNumber').addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+  });
+
+  // ── On load ──
+  window.onload = function() {
+    fetchKycRecords();
+    // Try to get current user (Spring Security form login stores session)
+    fetch('/api/kyc', { method: 'HEAD' }).catch(() => {});
+  };
+</script>
+</body>
+</html>
